@@ -1,6 +1,9 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
 
-module.exports = {
+dotenv.config();
+
+export default {
+	transform: {},
 	preset: 'ts-jest',
 	verbose: true,
 	setupFiles: ['dotenv/config'],

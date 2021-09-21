@@ -32,8 +32,8 @@
 		"cleanup": "run-p cleanup:*",
 		"cleanup:dist": "rimraf ./dist",
 		"cleanup:coverage": "rimraf ./coverage",
-		"test": "jest --coverage",
-		"test:watch": "jest --coverage --watchAll",
+		"test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+		"test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage --watchAll",
 		"dev": "npm run build -- -w --preserveWatchOutput --incremental"
 	},
 	"dependencies": {

@@ -5,7 +5,6 @@
 import argon2 from 'argon2';
 import { Directus } from '../../src/index';
 import { test } from '../utils.js';
-import { generateHash } from '../utils/generate-hash.js';
 
 describe('utils', function () {
 	test(`generates random string`, async (url, nock) => {
@@ -27,16 +26,16 @@ describe('utils', function () {
 	test(`hash generate`, async (url, nock) => {
 		nock()
 			.post('/utils/hash/generate', {
-				string: 'wolfulus',
+				string: 'Directus',
 			})
 			.reply(200, async (_, body: any) => {
 				return {
-					data: await generateHash(body.string),
+					data: '$argon2i$v=19$m=4096,t=3,p=1$+GCRDHNJmmE9WxnDaQuMBg$/JlbgNabcNcAuCJcFKCeBJkoL/4oOxUu4FPskD5tlj',
 				};
 			});
 
 		const sdk = new Directus(url);
-		const hash = await sdk.utils.hash.generate('wolfulus');
+		const hash = await sdk.utils.hash.generate('Directus');
 
 		expect(hash?.substr(0, 7)).toBe('$argon2');
 	});
@@ -44,16 +43,16 @@ describe('utils', function () {
 	test(`hash verify`, async (url, nock) => {
 		nock()
 			.post('/utils/hash/generate', {
-				string: 'wolfulus',
+				string: 'Directus',
 			})
 			.reply(200, async (_, body: any) => {
 				return {
-					data: await generateHash(body.string),
+					data: '$argon2i$v=19$m=4096,t=3,p=1$+GCRDHNJmmE9WxnDaQuMBg$/JlbgNabcNcAuCJcFKCeBJkoL/4oOxUu4FPskD5tlj',
 				};
 			});
 
 		const sdk = new Directus(url);
-		const hash = await sdk.utils.hash.generate('wolfulus');
+		const hash = await sdk.utils.hash.generate('Directus');
 
 		expect(hash?.substr(0, 7)).toBe('$argon2');
 
@@ -65,7 +64,7 @@ describe('utils', function () {
 				};
 			});
 
-		const result = await sdk.utils.hash.verify('wolfulus', hash || '');
+		const result = await sdk.utils.hash.verify('Directus', hash);
 
 		expect(result).toBe(true);
 	});
