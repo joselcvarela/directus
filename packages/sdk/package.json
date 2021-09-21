@@ -18,25 +18,16 @@
 		"node",
 		"sdk"
 	],
-	"main": "./dist/cjs/index.js",
+	"main": "./dist/esm/index.js",
 	"module": "./dist/esm/index.js",
-	"unpkg": "./dist/esm/index.js",
 	"types": "./dist/esm/index.d.ts",
-	"exports": {
-		".": {
-			"import": "./dist/esm/index.js",
-			"require": "./dist/cjs/index.js"
-		},
-		"./package.json": "./package.json"
-	},
 	"files": [
 		"dist"
 	],
+	"type": "module",
 	"scripts": {
 		"prebuild": "npm run cleanup",
-		"build": "run-p \"build:* -- {@}\" --",
-		"build:esm": "tsc --project ./tsconfig.json --module ES2015 --outDir ./dist/esm",
-		"build:cjs": "tsc --project ./tsconfig.json --module CommonJS --outDir ./dist/cjs",
+		"build": "tsc --project ./tsconfig.json --module ES2015 --outDir ./dist/esm",
 		"cleanup": "run-p cleanup:*",
 		"cleanup:dist": "rimraf ./dist",
 		"cleanup:coverage": "rimraf ./coverage",
