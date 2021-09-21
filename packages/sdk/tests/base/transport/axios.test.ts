@@ -3,10 +3,10 @@
  */
 
 import nock from 'nock';
-import { MemoryStorage } from '../../../src';
+import { MemoryStorage } from '../../../src/index.js';
 
-import { AxiosTransport } from '../../../src/base/transport/axios-transport';
-import { TransportResponse, TransportError } from '../../../src/transport';
+import { AxiosTransport } from '../../../src/base/transport/axios-transport.js';
+import { TransportResponse, TransportError } from '../../../src/transport.js';
 
 describe('axios transport', function () {
 	const URL = 'http://localhost';

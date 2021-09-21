@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { Directus, MemoryStorage } from '../../src/base';
+import { Directus, MemoryStorage } from '../../src/base/index.js';
 
 describe('node sdk', function () {
 	const sdk = new Directus('http://example.com');

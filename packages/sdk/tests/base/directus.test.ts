@@ -2,10 +2,10 @@
  * @jest-environment node
  */
 
-import { Auth } from '../../src/base/auth';
-import { ItemsHandler } from '../../src/base/items';
-import { AxiosTransport } from '../../src/base/transport/axios-transport';
-import { Directus } from '../../src/base';
+import { Auth } from '../../src/base/auth.js';
+import { ItemsHandler } from '../../src/base/items.js';
+import { AxiosTransport } from '../../src/base/transport/axios-transport.js';
+import { Directus } from '../../src/base/index.js';
 import {
 	ActivityHandler,
 	CollectionsHandler,
@@ -22,11 +22,11 @@ import {
 	SettingsHandler,
 	UsersHandler,
 	UtilsHandler,
-} from '../../src/handlers';
-import { test } from '../utils';
-import { InvitesHandler } from '../../src/handlers/invites';
-import { TFAHandler } from '../../src/handlers/tfa';
-import { MeHandler } from '../../src/handlers/me';
+} from '../../src/handlers/index.js';
+import { test } from '../utils.js';
+import { InvitesHandler } from '../../src/handlers/invites.js';
+import { TFAHandler } from '../../src/handlers/tfa.js';
+import { MeHandler } from '../../src/handlers/me.js';
 
 describe('sdk', function () {
 	const sdk = new Directus('http://example.com');

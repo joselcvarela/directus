@@ -3,9 +3,9 @@
  */
 
 import argon2 from 'argon2';
-import { Directus } from '../../src';
-import { test } from '../utils';
-import { generateHash } from '../utils/generate-hash';
+import { Directus } from '../../src/index';
+import { test } from '../utils.js';
+import { generateHash } from '../utils/generate-hash.js';
 
 describe('utils', function () {
 	test(`generates random string`, async (url, nock) => {
