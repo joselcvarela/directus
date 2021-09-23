@@ -41,11 +41,12 @@ export default defineLayout<LayoutOptions>({
 
 		const appStore = useAppStore();
 
+		const selection = useSync(props, 'selection', emit);
 		const layoutOptions = useSync(props, 'layoutOptions', emit);
 		const filters = useSync(props, 'filters', emit);
 		const searchQuery = useSync(props, 'searchQuery', emit);
 
-		const { selection, collection } = toRefs(props);
+		const { collection } = toRefs(props);
 
 		const { primaryKeyField, fields: fieldsInCollection } = useCollection(collection);
 
@@ -64,14 +65,14 @@ export default defineLayout<LayoutOptions>({
 					key: 'start_date',
 					field: startDateField.value,
 					operator: 'gte',
-					value: formatISO(calendar.value.view.currentStart),
+					value: 1262304000000,
 					hidden: true,
 				},
 				{
 					key: 'end_date',
 					field: startDateField.value,
 					operator: 'lte',
-					value: formatISO(calendar.value.view.currentEnd),
+					value: 1632377077595,
 					hidden: true,
 				},
 			];
@@ -277,6 +278,7 @@ export default defineLayout<LayoutOptions>({
 			showingCount,
 			createCalendar,
 			destroyCalendar,
+			primaryKeyField,
 		};
 
 		function updateCalendar() {

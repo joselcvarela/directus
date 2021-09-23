@@ -56,7 +56,6 @@
 				fixed-header
 				:items="presets"
 				:loading="loading"
-				show-select
 				@click:row="onRowClick"
 			>
 				<template #[`item.scope`]="{ item }">
