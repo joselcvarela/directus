@@ -98,6 +98,7 @@ export const useFieldDetailStore = defineStore({
 			this.collection = collection;
 			this.field.collection = collection;
 			this.editing = field;
+			const newLocalType = localType ?? getLocalTypeForField(collection, field) ?? 'standard';
 
 			if (field !== '+') {
 				const fieldsStore = useFieldsStore();
@@ -112,7 +113,7 @@ export const useFieldDetailStore = defineStore({
 					(relation) => relation.related_collection === collection && relation.meta?.one_field === field
 				) as DeepPartial<Relation> | undefined;
 
-				if (['files', 'm2m', 'translations'].includes(this.localType)) {
+				if (['files', 'm2m', 'translations'].includes(newLocalType)) {
 					this.relations.m2o = relations.find((relation) => relation !== this.relations.o2m) as
 						| DeepPartial<Relation>
 						| undefined;
@@ -123,9 +124,7 @@ export const useFieldDetailStore = defineStore({
 				}
 			}
 
-			this.update({
-				localType: localType ?? getLocalTypeForField(collection, field) ?? 'standard',
-			});
+			this.update({ localType: newLocalType });
 		},
 		update(updates: DeepPartial<typeof this.$state>) {
 			const hasChanged = (path: string) => has(updates, path) && get(updates, path) !== get(this, path);
