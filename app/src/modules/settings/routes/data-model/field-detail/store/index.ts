@@ -13,7 +13,7 @@ import {
 } from '@directus/shared/types';
 import { LOCAL_TYPES } from '@directus/shared/constants';
 import { computed } from 'vue';
-import { get, set } from 'lodash';
+import { get, set, merge } from 'lodash';
 import { unexpectedError } from '@/utils/unexpected-error';
 import { useCollectionsStore, useFieldsStore, useRelationsStore } from '@/stores';
 
@@ -177,7 +177,7 @@ export const useFieldDetailStore = defineStore({
 					break;
 			}
 
-			this.$patch(updates);
+			this.$patch((state) => merge(state, updates));
 		},
 		async save() {
 			if (!this.collection || !this.field.field) return;
