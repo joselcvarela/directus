@@ -14,7 +14,7 @@
 		>
 			<div class="scroll-container">
 				<div v-for="revision in group.revisions" :key="revision.id" class="log">
-					<button @click="previewing = revision">
+					<button @click="fetchRevision(revision.id)">
 						<v-icon name="play_arrow" color="var(--primary)" small />
 						{{ revision.timeRelative }}
 					</button>
@@ -26,14 +26,16 @@
 	</sidebar-detail>
 
 	<v-drawer
-		:model-value="!!previewing"
+		:model-value="loadingRevision || !!previewing"
 		:title="previewing ? previewing.timestampFormatted : t('logs')"
 		icon="fact_check"
 		@cancel="previewing = null"
 		@esc="previewing = null"
 	>
 		<div class="content">
-			<div class="steps">
+			<v-progress-linear v-if="loadingRevision" indeterminate />
+
+			<div v-else class="steps">
 				<div class="step">
 					<div class="header">
 						<span class="dot" />
@@ -110,11 +112,12 @@ const usedTrigger = computed(() => {
 
 const page = ref<number>(1);
 
-const { revisionsByDate, revisionsCount, loading, pagesCount, refresh } = useRevisions(
+const { revisionsByDate, revisionsCount, loading, pagesCount, refresh, getRevision, loadingRevision } = useRevisions(
 	ref('directus_flows'),
 	computed(() => unref(flow).id),
 	{
 		action: Action.RUN,
+		withoutContent: true,
 	}
 );
 
@@ -171,6 +174,10 @@ const steps = computed(() => {
 		}
 	);
 });
+
+async function fetchRevision(id: number | string) {
+	previewing.value = await getRevision(ref(id));
+}
 </script>
 
 <style lang="scss" scoped>

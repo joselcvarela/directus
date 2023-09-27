@@ -13,6 +13,7 @@ import { Revision, RevisionsByDate } from '@/types/revisions';
 
 type UseRevisionsOptions = {
 	action?: Action;
+	withoutContent?: boolean;
 };
 
 export function useRevisions(collection: Ref<string>, primaryKey: Ref<number | string>, options?: UseRevisionsOptions) {
@@ -22,13 +23,24 @@ export function useRevisions(collection: Ref<string>, primaryKey: Ref<number | s
 	const revisions = ref<Revision[] | null>(null);
 	const revisionsByDate = ref<RevisionsByDate[] | null>(null);
 	const loading = ref(false);
+	const loadingRevision = ref(false);
 	const revisionsCount = ref(0);
 	const created = ref<Revision>();
 	const pagesCount = ref(0);
 
 	watch([collection, primaryKey], () => getRevisions(), { immediate: true });
 
-	return { created, revisions, revisionsByDate, loading, refresh, revisionsCount, pagesCount };
+	return {
+		created,
+		revisions,
+		revisionsByDate,
+		loading,
+		refresh,
+		revisionsCount,
+		pagesCount,
+		getRevision,
+		loadingRevision,
+	};
 
 	async function getRevisions(page = 0) {
 		if (typeof unref(primaryKey) === 'undefined') return;
@@ -62,28 +74,32 @@ export function useRevisions(collection: Ref<string>, primaryKey: Ref<number | s
 				});
 			}
 
+			const fields = [
+				'id',
+				'collection',
+				'item',
+				'activity.action',
+				'activity.timestamp',
+				'activity.user.id',
+				'activity.user.email',
+				'activity.user.first_name',
+				'activity.user.last_name',
+				'activity.ip',
+				'activity.user_agent',
+				'activity.origin',
+			];
+
+			if (!options?.withoutContent) {
+				fields.push('data', 'delta');
+			}
+
 			const response = await api.get(`/revisions`, {
 				params: {
 					filter,
 					sort: '-id',
 					limit: pageSize,
 					page,
-					fields: [
-						'id',
-						'data',
-						'delta',
-						'collection',
-						'item',
-						'activity.action',
-						'activity.timestamp',
-						'activity.user.id',
-						'activity.user.email',
-						'activity.user.first_name',
-						'activity.user.last_name',
-						'activity.ip',
-						'activity.user_agent',
-						'activity.origin',
-					],
+					fields: fields,
 					meta: ['filter_count'],
 				},
 			});
@@ -106,22 +122,7 @@ export function useRevisions(collection: Ref<string>, primaryKey: Ref<number | s
 						},
 						sort: '-id',
 						limit: 1,
-						fields: [
-							'id',
-							'data',
-							'delta',
-							'collection',
-							'item',
-							'activity.action',
-							'activity.timestamp',
-							'activity.user.id',
-							'activity.user.email',
-							'activity.user.first_name',
-							'activity.user.last_name',
-							'activity.ip',
-							'activity.user_agent',
-							'activity.origin',
-						],
+						fields: ['id'],
 						meta: ['filter_count'],
 					},
 				});
@@ -200,5 +201,42 @@ export function useRevisions(collection: Ref<string>, primaryKey: Ref<number | s
 		const time = localizedFormat(new Date(timestamp), String(t('date-fns_time')));
 
 		return `${date} (${time})`;
+	}
+
+	async function getRevision(id: Ref<number | string>) {
+		try {
+			loadingRevision.value = true;
+
+			return await api
+				.get(`/revisions`, {
+					params: {
+						filter: {
+							id: {
+								_eq: unref(id),
+							},
+						},
+						limit: 1,
+						fields: [
+							'id',
+							'data',
+							'delta',
+							'collection',
+							'item',
+							'activity.action',
+							'activity.timestamp',
+							'activity.user.id',
+							'activity.user.email',
+							'activity.user.first_name',
+							'activity.user.last_name',
+							'activity.ip',
+							'activity.user_agent',
+							'activity.origin',
+						],
+					},
+				})
+				.then((r) => (r.data.data as object[])?.at(0));
+		} finally {
+			loadingRevision.value = false;
+		}
 	}
 }
