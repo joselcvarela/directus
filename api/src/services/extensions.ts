@@ -16,6 +16,7 @@ import type { ExtensionManager } from '../extensions/manager.js';
 import type { AbstractServiceOptions } from '../types/index.js';
 import { ItemsService } from './items.js';
 import { PermissionsService } from './permissions.js';
+import { shouldClearCache } from '../utils/should-clear-cache.js';
 
 export class ExtensionsService {
 	knex: Knex;
@@ -27,6 +28,7 @@ export class ExtensionsService {
 	systemCache: Keyv<any>;
 	helpers: Helpers;
 	extensionsManager: ExtensionManager;
+	cache: Keyv<any> | null;
 
 	constructor(options: AbstractServiceOptions) {
 		this.knex = options.knex || getDatabase();
@@ -44,6 +46,7 @@ export class ExtensionsService {
 
 		this.systemCache = getCache().systemCache;
 		this.helpers = getHelpers(this.knex);
+		this.cache = getCache().cache;
 	}
 
 	async readAll() {
@@ -97,6 +100,10 @@ export class ExtensionsService {
 						.where('name', 'LIKE', `${name}/%`);
 				}
 
+				if (shouldClearCache(this.cache, {}, 'directus_extensions')) {
+					await this.cache.clear();
+				}
+
 				this.extensionsManager.reload();
 				return;
 			}
@@ -105,6 +112,10 @@ export class ExtensionsService {
 
 			if (parent.schema?.type !== 'bundle') {
 				await this.knex('directus_extensions').update({ enabled: data.meta.enabled }).where({ name: key });
+
+				if (shouldClearCache(this.cache, {}, 'directus_extensions')) {
+					await this.cache.clear();
+				}
 
 				this.extensionsManager.reload();
 				return;
@@ -130,6 +141,10 @@ export class ExtensionsService {
 			} else if (child && !parent.meta.enabled) {
 				// if at least one child is enabled then ensure parent bundle is enabled
 				await this.knex('directus_extensions').update({ enabled: true }).where({ name: parent.name });
+			}
+
+			if (shouldClearCache(this.cache, {}, 'directus_extensions')) {
+				await this.cache.clear();
 			}
 
 			this.extensionsManager.reload();
